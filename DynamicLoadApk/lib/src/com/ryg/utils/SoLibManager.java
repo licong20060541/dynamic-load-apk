@@ -66,6 +66,7 @@ public final class SoLibManager {
     }
 
     /**
+     * study
      * get cpu name, according cpu type parse relevant so lib
      *
      * @return ARM、ARMV7、X86、MIPS
@@ -116,7 +117,7 @@ public final class SoLibManager {
         sNativeLibDir = nativeLibDir;
         Log.d(TAG, "cpuArchitect: " + cpuArchitect);
         long start = System.currentTimeMillis();
-        try {
+        try { // zip file
             ZipFile zipFile = new ZipFile(dexPath);
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
@@ -169,7 +170,7 @@ public final class SoLibManager {
         private void writeSoFile2LibDir() throws IOException {
             InputStream is = null;
             FileOutputStream fos = null;
-            is = mZipFile.getInputStream(mZipEntry);
+            is = mZipFile.getInputStream(mZipEntry); // zip
             fos = new FileOutputStream(new File(sNativeLibDir, mSoFileName));
             copy(is, fos);
             mZipFile.close();

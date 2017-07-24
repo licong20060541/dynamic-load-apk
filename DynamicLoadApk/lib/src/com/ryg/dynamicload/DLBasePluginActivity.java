@@ -44,6 +44,8 @@ import com.ryg.dynamicload.internal.DLPluginPackage;
 import com.ryg.utils.DLConstants;
 
 /**
+ * 插件的父Activity,作为插件功能，只是替换了view而已(由子类调用setContentView()实现),
+ * 生命周期在这里都是由代理Activity调用的
  * note: can use that like this.
  * 
  * @see {@link DLBasePluginActivity.that}

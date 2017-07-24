@@ -1,3 +1,11 @@
+# 参考github此工程根目录下的ReadMe.md和Android Studio.md
+
+支持3种plugin对host的调用模式：
+（1）无调用（但仍然可以用反射调用）。
+（2）部分调用，host可公开部分接口供plugin调用。 这前两种模式适用于plugin开发者无法获得host代码的情况。
+（3）完全调用，plugin可以完全调用host内容。这种模式适用于plugin开发者能获得host代码的情况。
+
+
 #关于sample
 这个目录包含了DL架构的sample，目前共有两个：main和depend_on_interface
 

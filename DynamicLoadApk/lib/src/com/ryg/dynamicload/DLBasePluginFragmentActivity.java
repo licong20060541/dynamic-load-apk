@@ -418,7 +418,7 @@ public class DLBasePluginFragmentActivity extends FragmentActivity implements DL
     // ------------------------------------------------------------------------
 
     @Override
-    public FragmentManager getSupportFragmentManager() {
+    public FragmentManager getSupportFragmentManager() { // diff
         if (mFrom == DLConstants.FROM_INTERNAL) {
             return super.getSupportFragmentManager();
         }
@@ -426,7 +426,7 @@ public class DLBasePluginFragmentActivity extends FragmentActivity implements DL
     }
 
     @Override
-    public LoaderManager getSupportLoaderManager() {
+    public LoaderManager getSupportLoaderManager() { // diff
         if (mFrom == DLConstants.FROM_INTERNAL) {
             return super.getSupportLoaderManager();
         }

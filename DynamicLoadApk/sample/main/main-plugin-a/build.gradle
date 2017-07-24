@@ -32,6 +32,7 @@ android {
     }
 }
 
+// provided usage!!
 dependencies {
     provided files('../../../lib/build/libs/lib.jar')
     provided files('external-jars/android-support-v4.jar')

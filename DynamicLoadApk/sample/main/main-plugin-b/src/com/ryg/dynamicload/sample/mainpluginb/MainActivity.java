@@ -41,6 +41,7 @@ public class MainActivity extends DLBasePluginActivity {
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                // provided project(':lib')? plugin可以完全调用host内容
                 TestHostClass testHostClass = new TestHostClass();
                 testHostClass.testMethod(that);
             }

@@ -40,6 +40,7 @@ public class MainActivity extends DLBasePluginActivity {
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                // host可公开部分接口供plugin调用
                 HostInterface hostInterface = HostInterfaceManager.getHostInterface();
                 hostInterface.hostMethod(that);
             }

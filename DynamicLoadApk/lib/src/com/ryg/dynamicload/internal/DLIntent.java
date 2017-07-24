@@ -75,16 +75,20 @@ public class DLIntent extends Intent {
 
     @Override
     public Intent putExtra(String name, Parcelable value) {
-        setupExtraClassLoader(value);
+        setupExtraClassLoader(value); //
         return super.putExtra(name, value);
     }
 
     @Override
     public Intent putExtra(String name, Serializable value) {
-        setupExtraClassLoader(value);
+        setupExtraClassLoader(value); //
         return super.putExtra(name, value);
     }
 
+    /**
+     * reason? for extra value
+     * @param value
+     */
     private void setupExtraClassLoader(Object value) {
         ClassLoader pluginLoader = value.getClass().getClassLoader();
         DLConfigs.sPluginClassloader = pluginLoader;

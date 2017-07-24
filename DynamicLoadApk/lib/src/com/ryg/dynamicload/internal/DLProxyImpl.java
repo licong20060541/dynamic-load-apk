@@ -73,7 +73,7 @@ public class DLProxyImpl {
                 mClass = packageInfo.activities[0].name;
             }
 
-            //Finals 修复主题BUG
+            //Finals 修复主题BUG ---- study
             int defaultTheme = packageInfo.applicationInfo.theme;
             for (ActivityInfo a : packageInfo.activities) {
                 if (a.name.equals(mClass)) {
@@ -96,6 +96,7 @@ public class DLProxyImpl {
         }
     }
 
+    // handle theme?
     private void handleActivityInfo() {
         Log.d(TAG, "handleActivityInfo, theme=" + mActivityInfo.theme);
         if (mActivityInfo.theme > 0) {
@@ -116,8 +117,9 @@ public class DLProxyImpl {
 
     public void onCreate(Intent intent) {
 
+        // !!!important for extra
         // set the extra's class loader
-        intent.setExtrasClassLoader(DLConfigs.sPluginClassloader);
+        intent.setExtrasClassLoader(DLConfigs.sPluginClassloader); // 利用全局变量实现...
 
         mPackageName = intent.getStringExtra(DLConstants.EXTRA_PACKAGE);
         mClass = intent.getStringExtra(DLConstants.EXTRA_CLASS);
@@ -136,8 +138,11 @@ public class DLProxyImpl {
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     protected void launchTargetActivity() {
         try {
+            // 1 class
             Class<?> localClass = getClassLoader().loadClass(mClass);
+            // 2 Constructor
             Constructor<?> localConstructor = localClass.getConstructor(new Class[] {});
+            // 3 instance
             Object instance = localConstructor.newInstance(new Object[] {});
             mPluginActivity = (DLPlugin) instance;
             ((DLAttachable) mProxyActivity).attach(mPluginActivity, mPluginManager);

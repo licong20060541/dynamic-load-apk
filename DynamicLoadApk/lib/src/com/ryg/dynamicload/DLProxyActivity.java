@@ -35,6 +35,7 @@ import com.ryg.dynamicload.internal.DLAttachable;
 import com.ryg.dynamicload.internal.DLPluginManager;
 import com.ryg.dynamicload.internal.DLProxyImpl;
 
+// 代理Activity, 内部引用了插件Activity, 一些如主题修复的功能放到了DLProxyImpl中(似桥接)
 public class DLProxyActivity extends Activity implements DLAttachable {
 
     protected DLPlugin mRemoteActivity;
@@ -57,7 +58,7 @@ public class DLProxyActivity extends Activity implements DLAttachable {
     }
 
     @Override
-    public Resources getResources() {
+    public Resources getResources() { // res是如何加载成功的，通过对应的getResources()即可
         return impl.getResources() == null ? super.getResources() : impl.getResources();
     }
 

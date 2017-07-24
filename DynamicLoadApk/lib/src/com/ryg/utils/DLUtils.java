@@ -59,7 +59,7 @@ public class DLUtils {
 
         // Workaround for http://code.google.com/p/android/issues/detail?id=9151
         ApplicationInfo appInfo = pkgInfo.applicationInfo;
-        if (Build.VERSION.SDK_INT >= 8) {
+        if (Build.VERSION.SDK_INT >= 8) { //
             appInfo.sourceDir = apkFilepath;
             appInfo.publicSourceDir = apkFilepath;
         }
@@ -76,7 +76,7 @@ public class DLUtils {
 
         // Workaround for http://code.google.com/p/android/issues/detail?id=9151
         ApplicationInfo appInfo = pkgInfo.applicationInfo;
-        if (Build.VERSION.SDK_INT >= 8) {
+        if (Build.VERSION.SDK_INT >= 8) { //
             appInfo.sourceDir = apkFilepath;
             appInfo.publicSourceDir = apkFilepath;
         }

@@ -102,6 +102,7 @@ public class DLPluginManager {
     }
 
     /**
+     * install external apk
      * Load a apk. Before start a plugin Activity, we should do this first.<br/>
      * NOTE : will only be called by host apk.
      * 
@@ -123,6 +124,7 @@ public class DLPluginManager {
     public DLPluginPackage loadApk(final String dexPath, boolean hasSoLib) {
         mFrom = DLConstants.FROM_EXTERNAL;
 
+        // 解析路径下的apk信息
         PackageInfo packageInfo = mContext.getPackageManager().getPackageArchiveInfo(dexPath,
                 PackageManager.GET_ACTIVITIES | PackageManager.GET_SERVICES);
         if (packageInfo == null) {
@@ -131,7 +133,8 @@ public class DLPluginManager {
 
         DLPluginPackage pluginPackage = preparePluginEnv(packageInfo, dexPath);
         if (hasSoLib) {
-            copySoLib(dexPath);
+            copySoLib(dexPath); // notice: after new DexClassLoader,
+            // 先利用路径创建了classLoader, 然后才往路径下拷贝，因此会有同步问题
         }
 
         return pluginPackage;
@@ -161,10 +164,18 @@ public class DLPluginManager {
 
     private String dexOutputPath;
 
+    /**
+     * Parameters
+     *      dexPath需要装载的APK或者Jar文件的路径。包含多个路径用File.pathSeparator间隔开,在Android上默认是 ":"
+     *      optimizedDirectory 	优化后的dex文件存放目录，不能为null
+     *      libraryPath 	目标类中使用的C/C++库的列表,每个目录用File.pathSeparator间隔开; 可以为 null
+     *      parent 	该类装载器的父装载器，一般用当前执行类的装载器
+     */
     private DexClassLoader createDexClassLoader(String dexPath) {
         File dexOutputDir = mContext.getDir("dex", Context.MODE_PRIVATE);
         dexOutputPath = dexOutputDir.getAbsolutePath();
-        DexClassLoader loader = new DexClassLoader(dexPath, dexOutputPath, mNativeLibDir, mContext.getClassLoader());
+        DexClassLoader loader = new DexClassLoader(dexPath, dexOutputPath, mNativeLibDir
+                , mContext.getClassLoader());
         return loader;
     }
 
@@ -198,6 +209,7 @@ public class DLPluginManager {
      * @param hasSoLib
      */
     private void copySoLib(String dexPath) {
+        // 如上分析同步问题
         // TODO: copy so lib async will lead to bugs maybe, waiting for
         // resolved later.
 
@@ -217,6 +229,7 @@ public class DLPluginManager {
     }
 
     /**
+     * This is the main logic!
      * @param context
      * @param dlIntent
      * @param requestCode
@@ -242,12 +255,15 @@ public class DLPluginManager {
             return START_RESULT_NO_PKG;
         }
 
+        // 1 find class name
         final String className = getPluginActivityFullPath(dlIntent, pluginPackage);
+        // 2 load class
         Class<?> clazz = loadPluginClass(pluginPackage.classLoader, className);
         if (clazz == null) {
             return START_RESULT_NO_CLASS;
         }
 
+        // 3 find proper proxy activity
         // get the proxy activity class, the proxy activity will launch the
         // plugin activity.
         Class<? extends Activity> activityClass = getProxyActivityClass(clazz);
@@ -255,6 +271,7 @@ public class DLPluginManager {
             return START_RESULT_TYPE_ERROR;
         }
 
+        // 4 set raw activity data
         // put extra data
         dlIntent.putExtra(DLConstants.EXTRA_CLASS, className);
         dlIntent.putExtra(DLConstants.EXTRA_PACKAGE, packageName);
@@ -370,20 +387,23 @@ public class DLPluginManager {
             return;
         }
 
-        // 获取要启动的Service的全名
+        // 1 获取要启动的Service的全名
         String className = dlIntent.getPluginClass();
+        // 2 load class
         Class<?> clazz = loadPluginClass(pluginPackage.classLoader, className);
         if (clazz == null) {
             fetchProxyServiceClass.onFetch(START_RESULT_NO_CLASS, null);
             return;
         }
 
+        // 3 find proxy service
         Class<? extends Service> proxyServiceClass = getProxyServiceClass(clazz);
         if (proxyServiceClass == null) {
             fetchProxyServiceClass.onFetch(START_RESULT_TYPE_ERROR, null);
             return;
         }
 
+        // 4 set raw service data
         // put extra data
         dlIntent.putExtra(DLConstants.EXTRA_CLASS, className);
         dlIntent.putExtra(DLConstants.EXTRA_PACKAGE, packageName);
@@ -394,6 +414,7 @@ public class DLPluginManager {
     private Class<?> loadPluginClass(ClassLoader classLoader, String className) {
         Class<?> clazz = null;
         try {
+            // find class use classLoader
             clazz = Class.forName(className, true, classLoader);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -420,6 +441,8 @@ public class DLPluginManager {
      * @return
      */
     private Class<? extends Activity> getProxyActivityClass(Class<?> clazz) {
+        // instanceof是  子-->父
+        // isAssignableFrom是  父-->子
         Class<? extends Activity> activityClass = null;
         if (DLBasePluginActivity.class.isAssignableFrom(clazz)) {
             activityClass = DLProxyActivity.class;

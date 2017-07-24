@@ -43,7 +43,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
         setContentView(R.layout.activity_main);
         initView();
         initData();
-        
+        // 预装先定的接口（放在doi-common里）
         HostInterfaceManager.setHostInterface(new HostInterfaceImp());
     }
 
